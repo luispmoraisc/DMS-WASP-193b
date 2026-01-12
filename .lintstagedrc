@@ -1,5 +1,5 @@
 {
   "packages/**/*.{ts,tsx,json,md,yml}": [
-    "yarn lint"
+    "yarn lint --fix"
   ]
 }
