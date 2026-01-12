@@ -1,0 +1,42 @@
+{
+  "packageManager": "yarn@1.22.22",
+  "name": "dms-wasp-193b",
+  "version": "1.0.0",
+  "description": "Frontend client of Document Management System with AI tools",
+  "main": "index.js",
+  "repository": "https://github.com/luispmoraisc/DMS-WASP-193b",
+  "author": "Luis Cardoso <lpmcdigital@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint": "yarn exec biome lint --write",
+    "prepare": "husky",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "commit": "git cz",
+    "release": "semantic-release"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "semantic-release": "^25.0.2",
+    "tsx": "^4.21.0",
+    "turbo": "^2.7.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

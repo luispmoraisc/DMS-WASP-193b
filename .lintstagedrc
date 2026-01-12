@@ -1,0 +1,5 @@
+{
+  "packages/**/*.{ts,tsx,json,md,yml}": [
+    "yarn lint"
+  ]
+}
