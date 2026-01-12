@@ -1,0 +1,20 @@
+{
+  "name": "@dms/shared",
+  "version": "0.0.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./appError": "./src/appError.ts",
+    "./container": "./src/container.ts",
+    "./logger": "./src/logger.ts"
+  },
+  "devDependencies": {
+    "reflect-metadata": "^0.2.2"
+  },
+  "dependencies": {
+    "pino": "^10.1.1",
+    "tsyringe": "^4.10.0"
+  }
+}
