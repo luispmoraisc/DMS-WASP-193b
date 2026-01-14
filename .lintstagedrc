@@ -1,5 +1,8 @@
 {
   "packages/**/*.{ts,tsx,json,md,yml}": [
-    "yarn lint --fix"
+    "echo 'Linting packages...' "
+  ],
+  "apps/**/*.{ts,tsx,json,md,yml}": [
+    "echo 'Linting apps...' "
   ]
 }

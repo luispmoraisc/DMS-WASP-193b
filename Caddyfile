@@ -1,0 +1,42 @@
+{
+	email {$ADMIN_USER_EMAIL}
+	acme_ca {$CADDY_ACME_API}
+	admin 0.0.0.0:2019
+}
+
+*.{$DOMAIN} {
+	tls {
+		dns {$CADDY_DNS_PLUGIN} {$CADDY_DNS_PLUGIN_TOKEN}
+		propagation_timeout 60m
+	}
+
+	log {
+		output file /data/access.log
+		format console
+		level INFO
+	}
+
+	encode gzip
+	
+	header {
+		Strict-Transport-Security "max-age=63072000"
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:"
+	}
+	
+	@n8n host n8n.{$DOMAIN}
+	reverse_proxy @n8n n8n:{$N8N_PORT:5678} {
+		header_up Host {host}
+		header_up X-Real-IP {remote}
+		header_up X-Forwarded-For {remote}
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-Port "443"
+		transport http {
+			dial_timeout 10s
+			read_timeout 30s
+		}
+	}	
+}

@@ -12,19 +12,20 @@
     "lint": "yarn exec biome lint --write",
     "prepare": "husky",
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "yarn cp && turbo run dev",
     "commit": "git cz",
     "release": "semantic-release",
     "db:migrate:deploy": "turbo run db:migrate:deploy",
     "db:migrate:dev": "turbo run db:migrate:dev",
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
-    "generate": "turbo run generate"
+    "generate": "turbo run generate",
+    "cp": "cp .env.example ./packages/infra/.env && cp .env.example ./apps/api/.env && cp .env.example ./packages/shared/.env"
   },
   "workspaces": [
+    "apps/*",
     "packages/*"
   ],
-  "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "@commitlint/cli": "^20.3.1",

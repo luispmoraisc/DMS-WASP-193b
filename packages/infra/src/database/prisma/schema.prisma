@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider                         = "prisma-zod-generator"
+  output                           = "./generated/zod"
+  useMultipleFiles                 = true
+  createOptionalDefaultValuesTypes = true
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FileStatus {
+  UPLOADING  @map("uploading")
+  UPLOADED   @map("uploaded")
+  PROCESSING @map("processing")
+  PROCESSED  @map("processed")
+  ERROR      @map("error")
+}
+
+enum JobType {
+  PDF_SPLIT @map("pdf_split")
+  OCR       @map("ocr")
+  THUMBNAIL @map("thumbnail")
+  COMPRESS  @map("compress")
+}
+
+enum JobStatus {
+  PENDING    @map("pending")
+  PROCESSING @map("processing")
+  COMPLETED  @map("completed")
+  FAILED     @map("failed")
+}
+
+enum NotificationType {
+  INFO    @map("info")
+  SUCCESS @map("success")
+  WARNING @map("warning")
+  ERROR   @map("error")
+}
+
+model Profile {
+  // Supabase links this to auth.users via SQL migration.
+  id           String   @id @db.Uuid
+  email        String
+  fullName     String?  @map("full_name")
+  avatarUrl    String?  @map("avatar_url")
+  storageUsed  BigInt   @default(0) @map("storage_used")
+  storageLimit BigInt   @default(5368709120) @map("storage_limit")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  folders       Folder[]
+  files         File[]
+  jobs          ProcessingJob[]
+  notifications Notification[]
+
+  @@map("profiles")
+}
+
+model Folder {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  userId    String   @map("user_id") @db.Uuid
+  parentId  String?  @map("parent_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user     Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folder[] @relation("FolderHierarchy")
+  files    File[]
+
+  @@index([userId], map: "idx_folders_user_id")
+  @@index([parentId], map: "idx_folders_parent_id")
+  @@map("folders")
+}
+
+model File {
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  originalName     String     @map("original_name")
+  mimeType         String     @map("mime_type")
+  size             BigInt
+  storagePath      String     @map("storage_path")
+  thumbnailPath    String?    @map("thumbnail_path")
+  userId           String     @map("user_id") @db.Uuid
+  folderId         String?    @map("folder_id") @db.Uuid
+  status           FileStatus @default(UPLOADED)
+  processingResult Json?      @map("processing_result")
+  createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+
+  user          Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder        Folder?         @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  jobs          ProcessingJob[]
+  notifications Notification[]
+
+  @@index([userId], map: "idx_files_user_id")
+  @@index([folderId], map: "idx_files_folder_id")
+  @@map("files")
+}
+
+model ProcessingJob {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fileId       String    @map("file_id") @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  jobType      JobType   @map("job_type")
+  status       JobStatus @default(PENDING)
+  progress     Int       @default(0)
+  result       Json?
+  errorMessage String?   @map("error_message")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  file File    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([fileId], map: "idx_processing_jobs_file_id")
+  @@index([status], map: "idx_processing_jobs_status")
+  @@map("processing_jobs")
+}
+
+model Notification {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  read      Boolean          @default(false)
+  fileId    String?          @map("file_id") @db.Uuid
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file File?   @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  @@index([userId], map: "idx_notifications_user_id")
+  @@index([read], map: "idx_notifications_read")
+  @@map("notifications")
+}

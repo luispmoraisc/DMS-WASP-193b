@@ -1,0 +1,33 @@
+import { inject, injectable } from "tsyringe";
+import type { IUserRepository } from "@dms/domain/repositories";
+import { logger, type TMonitoringParams } from "@dms/shared/logger";
+import type { TSignInUpSchema } from "@dms/domain/schemas";
+import { maskSensitiveData } from "@dms/shared/utils";
+
+@injectable()
+export class SignUpUseCase {
+  constructor(
+    @inject("UserRepository") private userRepository: IUserRepository
+  ) {}
+
+  public async execute(
+    data: TSignInUpSchema,
+    ctx?: TMonitoringParams
+  ): Promise<void> {
+    try {
+      const maskedData = maskSensitiveData(data);
+      logger.debug(
+        { ctx },
+        `sign up request received for email: ${maskedData.email}`
+      );
+      const response = await this.userRepository.signUp(data, {
+        ...ctx,
+        payload: data,
+      });
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
