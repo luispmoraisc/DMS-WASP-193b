@@ -1,0 +1,47 @@
+{
+  "name": "@dms/infra",
+  "version": "0.0.1",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./database": "./src/database/index.ts",
+    "./supabase": "./src/supabase/index.ts"
+  },
+  "scripts": {
+    "db:pull": "prisma db pull --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "db:migrate:deploy": "prisma migrate deploy --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "db:migrate:dev": "prisma migrate dev --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "db:push": "prisma db push --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "db:seed": "tsx src/seed.ts --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "db:reset": "prisma migrate reset --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "format": "prisma format --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "generate": "prisma generate --schema=./src/database/prisma/schema.prisma --config=./src/database/prisma.config.ts",
+    "lint": "biome check .",
+    "prebuild": "yarn generate",
+    "predev": "yarn generate",
+    "studio": "prisma studio --config=./src/database/prisma.config.ts"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.2.0",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.1.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "@prisma/client-runtime-utils": "^7.2.0",
+    "@supabase/supabase-js": "^2.90.1",
+    "dotenv": "^17.2.3",
+    "pg": "^8.16.3",
+    "prisma-zod-generator": "^2.1.2",
+    "prom-client": "^15.1.3",
+    "tsyringe": "^4.10.0",
+    "zod": "^4.3.5",
+    "zod-prisma-types": "^3.3.10"
+  }
+}

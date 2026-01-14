@@ -1,0 +1,11 @@
+{
+  "extends": "@dms/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["packages/ds/src/*", "apps/api/src/*"]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}

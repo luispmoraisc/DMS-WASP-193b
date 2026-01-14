@@ -1,0 +1,16 @@
+{
+  "name": "@dms/domain",
+  "version": "0.0.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./entities": "./src/entities.ts",
+    "./enums": "./src/enums.ts",
+    "./errors": "./src/errors.ts",
+    "./repositories": "./src/repositories.ts",
+    "./schemas": "./src/schemas.ts",
+    "./value-objects": "./src/value-objects.ts"
+  }
+}

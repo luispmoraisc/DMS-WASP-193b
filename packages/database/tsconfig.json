@@ -1,5 +1,0 @@
-{
-  "extends": "@dms/typescript-config/base.json",
-  "include": ["**/*.ts", "**/*.tsx", "tsup.config.ts"],
-  "exclude": ["node_modules"]
-}

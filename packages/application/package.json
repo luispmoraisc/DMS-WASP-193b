@@ -1,0 +1,12 @@
+{
+  "name": "@dms/application",
+  "version": "0.0.1",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./use-cases": "./src/use-cases.ts",
+    "./register": "./src/register.ts"
+  }
+}

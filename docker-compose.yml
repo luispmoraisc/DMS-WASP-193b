@@ -1,5 +1,16 @@
-
 services:
+  redis:
+    image: redis:6
+    platform: linux/amd64
+    container_name: dms_redis
+    restart: always
+    # command: redis-server
+    volumes:
+      - ./redis_data:/data
+    ports:
+      - 6379:6379
+    networks:
+      - dms_network
   postgres:
     image: postgres:16
     container_name: dms_database
@@ -42,14 +53,81 @@ services:
     networks:
       - dms_network
 
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    container_name: dms_n8n
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=${N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS}
+      - N8N_RUNNERS_ENABLED=${N8N_RUNNERS_ENABLED}
+      - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_METRICS=${N8N_METRICS}
+      - N8N_PROXY_HOPS=${N8N_PROXY_HOPS}
+      - N8N_LOG_OUTPUT=${N8N_LOG_OUTPUT}
+      - N8N_LOG_FORMAT=${N8N_LOG_FORMAT}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=${N8N_BLOCK_ENV_ACCESS_IN_NODE}
+      - N8N_METRICS_INCLUDE_DEFAULT_METRICS=${N8N_METRICS_INCLUDE_DEFAULT_METRICS}
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=${OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS}
+      - DB_SQLITE_POOL_SIZE=${DB_SQLITE_POOL_SIZE}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+    # env_file:
+    #   - .env.example
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - n8n_logs:/home/node/.n8n/logs
+    depends_on:
+      - redis
+    networks:
+      - dms_network
+
+  caddy:
+    container_name: dms_caddy
+    build:
+      context: .
+      dockerfile: ./caddy.Dockerfile
+      args:
+        CADDY_DNS_PLUGIN: ${CADDY_DNS_PLUGIN}
+    restart: unless-stopped
+    environment:
+      CADDY_DNS_PLUGIN: ${CADDY_DNS_PLUGIN}
+      CADDY_DNS_PLUGIN_TOKEN: ${CADDY_DNS_PLUGIN_TOKEN}
+      ADMIN_USER_EMAIL: ${ADMIN_USER_EMAIL}
+      CADDY_ACME_API: ${CADDY_ACME_API:-https://acme-staging-v02.api.letsencrypt.org/directory}
+      DOMAIN: ${DOMAIN}
+      N8N_PORT: ${N8N_PORT:-5678}
+    expose:
+      - 80/tcp
+      - 443/tcp
+      - 443/udp
+      - 2019/tcp
+    ports:
+      - ${CADDY_INTERFACE:-0.0.0.0}:80:80
+      - ${CADDY_INTERFACE:-0.0.0.0}:443:443
+    volumes:
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+    networks:
+      - dms_network
+
 networks:
   dms_network:
     driver: bridge
     name: dms_network
 
 volumes:
+  caddy_data:
+  caddy_config:
   postgres_data:
   grafana_data:
   prometheus_data:
+  n8n_data:
+  n8n_logs: 
   logs:
   metrics:
