@@ -72,7 +72,18 @@ export class SupabaseUserRepository implements IUserRepository {
       });
 
       if (error || !data.session) {
-        throw error;
+        throw SupabaseErrorTranslator.translateAndLog({
+          error,
+          catalog: SupabaseUserCatalog,
+          ctx: {
+            ...ctx,
+            repo: "SupabaseUserRepository",
+            op: "signIn",
+            traceId: ctx?.traceId,
+            payload: maskSensitiveData(ctx?.payload),
+            codeLevels: {},
+          },
+        });
       }
 
       supabaseSignInsCounter.inc({

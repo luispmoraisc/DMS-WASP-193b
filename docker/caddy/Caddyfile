@@ -6,7 +6,7 @@
 
 *.{$DOMAIN} {
 	tls {
-		dns {$CADDY_DNS_PLUGIN} {$CADDY_DNS_PLUGIN_TOKEN}
+		dns cloudflare {$CADDY_DNS_CLOUDFLARE_TOKEN}
 		propagation_timeout 60m
 	}
 

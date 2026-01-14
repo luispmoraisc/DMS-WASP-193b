@@ -20,7 +20,9 @@
     "db:push": "turbo run db:push",
     "db:seed": "turbo run db:seed",
     "generate": "turbo run generate",
-    "cp": "cp .env.example ./packages/infra/.env && cp .env.example ./apps/api/.env && cp .env.example ./packages/shared/.env"
+    "start": "turbo run dev",
+    "cp": "cp .env ./packages/infra/.env && cp .env ./apps/api/.env && cp .env ./packages/shared/.env",
+    "clear:envs": "rm ./packages/infra/.env && rm ./apps/api/.env && rm ./packages/shared/.env"
   },
   "workspaces": [
     "apps/*",
@@ -38,7 +40,7 @@
     "turbo": "^2.7.4"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.16.0"
   },
   "config": {
     "commitizen": {

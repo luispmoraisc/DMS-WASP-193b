@@ -1,12 +1,4 @@
-import {
-  Counter,
-  Histogram,
-  collectDefaultMetrics,
-  Registry,
-} from "prom-client";
-
-export const register = new Registry();
-collectDefaultMetrics({ register });
+import { Counter, Histogram, register } from "prom-client";
 
 export const httpRequestDuration = new Histogram({
   name: "http_request_duration_seconds",

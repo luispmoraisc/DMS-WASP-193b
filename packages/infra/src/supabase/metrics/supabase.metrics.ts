@@ -1,7 +1,4 @@
-import { Counter, collectDefaultMetrics, Registry } from "prom-client";
-
-export const register = new Registry();
-collectDefaultMetrics({ register });
+import { Counter, register } from "prom-client";
 
 export const supabaseErrorsCounter = new Counter({
   name: "app_supabase_errors_total",

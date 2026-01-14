@@ -19,8 +19,8 @@ For the MVP, Supabase + N8N are used to accelerate delivery.
 High-level flow:
 
 Client -> API -> Supabase Storage -> N8N workflow -> Mistral -> WebSocket -> Client
-                 Supabase Tables                                Redis
-                 Redis
+Supabase Tables Redis
+Redis
 
 ### Frontend
 
@@ -37,7 +37,8 @@ Client -> API -> Supabase Storage -> N8N workflow -> Mistral -> WebSocket -> Cli
 
 ### Evolution
 
-Day 0: move any direct Supabase client access into the backend.
+Day 0: create application image on the right and security way.
+Day 1: move any direct Supabase client access into the backend.
 
 ## Overview
 
@@ -127,3 +128,10 @@ Start it with:
 ```sh
 docker-compose up -d
 ```
+
+## Frontend screens
+
+![Home](docs/home.png)
+![Login](docs/login.png)
+![Thumbnail](docs/thumbnail.png)
+![Uploaded](docs/uploaded.png)

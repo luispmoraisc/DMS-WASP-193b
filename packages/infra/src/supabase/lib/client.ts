@@ -1,8 +1,6 @@
-import { config } from "dotenv";
-import z from "zod";
 import { createClient } from "@supabase/supabase-js";
-
-config();
+import "dotenv/config";
+import z from "zod";
 
 const supabaseConfigSchema = z.object({
   SUPABASE_URL: z.string().nonempty("SUPABASE_URL is required"),

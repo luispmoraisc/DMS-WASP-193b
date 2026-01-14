@@ -8,42 +8,42 @@
   "panels": [
     {
       "type": "graph",
-      "title": "HTTP Requests",
+      "title": "Prisma Errors Total",
       "targets": [
         {
-          "expr": "http_requests_total"
+          "expr": "app_db_errors_total"
         }
       ]
     },
     {
       "type": "graph",
-      "title": "HTTP Request Duration",
+      "title": "Supabase Errors Total",
       "targets": [
         {
-          "expr": "http_request_duration_seconds"
+          "expr": "app_supabase_errors_total"
         }
       ]
     },
     {
       "type": "graph",
-      "title": "HTTP Request Size",
+      "title": "Supabase Sign Ups Total",
       "targets": [
         {
-          "expr": "http_request_size_bytes"
+          "expr": "app_supabase_sign_ups_total"
         }
       ]
     },
     {
       "type": "graph",
-      "title": "HTTP Response Size",
+      "title": "Supabase Sign Ins Total",
       "targets": [
         {
-          "expr": "http_response_size_bytes"
+          "expr": "app_supabase_sign_ins_total"
         }
       ]
     }
   ],
   "schemaVersion": 36,
-  "title": "API Metrics",
+  "title": "Database Metrics",
   "version": 1
 }

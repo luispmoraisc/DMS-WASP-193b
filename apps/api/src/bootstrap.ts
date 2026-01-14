@@ -1,19 +1,19 @@
-import express from "express";
-import cors from "cors";
 import compression from "compression";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
 import helmet from "helmet";
 import { container as tsyringecontainer } from "tsyringe";
-import { collectDefaultMetrics, register } from "prom-client";
-import cookieParser from "cookie-parser";
 
-import { configureContainer } from "@dms/shared/container";
-import { Logger } from "@dms/shared/logger";
 import {
   createApiRoutes,
   errorHandlerMiddleware,
-  traceIdMiddleware,
   promMiddleware,
+  traceIdMiddleware,
 } from "@dms/interfaces/http";
+import { configureContainer } from "@dms/shared/container";
+import { Logger } from "@dms/shared/logger";
+import { collectDefaultMetrics, register } from "prom-client";
 
 const bootstrap = async (logger: Logger) => {
   const container = configureContainer(tsyringecontainer, logger);
@@ -27,6 +27,8 @@ const bootstrap = async (logger: Logger) => {
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       origin: [
         "http://localhost:3000",
+        "http://localhost:9090",
+        "http://localhost:4000",
         "http://localhost:3001",
         "http://localhost:5173",
         "http://localhost:4200",

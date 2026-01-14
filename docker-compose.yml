@@ -11,21 +11,20 @@ services:
       - 6379:6379
     networks:
       - dms_network
+      
   postgres:
     image: postgres:16
     container_name: dms_database
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_HOST: localhost      
+    env_file:
+      - .env.example
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - dms_network
+
   prometheus:
     image: prom/prometheus:latest
     container_name: dms_prometheus
@@ -33,6 +32,7 @@ services:
       - "9090:9090"
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -47,36 +47,21 @@ services:
     image: grafana/grafana:latest
     container_name: dms_grafana
     ports:
-      - "4000:3000"    
+      - "4000:3000"
+    env_file:
+      - .env.example
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
     networks:
       - dms_network
 
   n8n:
     image: n8nio/n8n
     restart: unless-stopped
-    container_name: dms_n8n
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
-      - N8N_PROTOCOL=${N8N_PROTOCOL}
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=${N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS}
-      - N8N_RUNNERS_ENABLED=${N8N_RUNNERS_ENABLED}
-      - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL}
-      - N8N_PORT=${N8N_PORT}
-      - N8N_HOST=${N8N_HOST}
-      - N8N_METRICS=${N8N_METRICS}
-      - N8N_PROXY_HOPS=${N8N_PROXY_HOPS}
-      - N8N_LOG_OUTPUT=${N8N_LOG_OUTPUT}
-      - N8N_LOG_FORMAT=${N8N_LOG_FORMAT}
-      - N8N_BLOCK_ENV_ACCESS_IN_NODE=${N8N_BLOCK_ENV_ACCESS_IN_NODE}
-      - N8N_METRICS_INCLUDE_DEFAULT_METRICS=${N8N_METRICS_INCLUDE_DEFAULT_METRICS}
-      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=${OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS}
-      - DB_SQLITE_POOL_SIZE=${DB_SQLITE_POOL_SIZE}
-      - WEBHOOK_URL=${WEBHOOK_URL}
-    # env_file:
-    #   - .env.example
+    container_name: dms_n8n    
+    env_file:
+      - .env.example
     ports:
       - "5678:5678"
     volumes:
@@ -87,34 +72,45 @@ services:
     networks:
       - dms_network
 
-  caddy:
-    container_name: dms_caddy
+  api:
+    container_name: dms_api
     build:
       context: .
-      dockerfile: ./caddy.Dockerfile
-      args:
-        CADDY_DNS_PLUGIN: ${CADDY_DNS_PLUGIN}
-    restart: unless-stopped
-    environment:
-      CADDY_DNS_PLUGIN: ${CADDY_DNS_PLUGIN}
-      CADDY_DNS_PLUGIN_TOKEN: ${CADDY_DNS_PLUGIN_TOKEN}
-      ADMIN_USER_EMAIL: ${ADMIN_USER_EMAIL}
-      CADDY_ACME_API: ${CADDY_ACME_API:-https://acme-staging-v02.api.letsencrypt.org/directory}
-      DOMAIN: ${DOMAIN}
-      N8N_PORT: ${N8N_PORT:-5678}
-    expose:
-      - 80/tcp
-      - 443/tcp
-      - 443/udp
-      - 2019/tcp
+      dockerfile: ./apps/api/Dockerfile
+    env_file:
+      - .env.example
     ports:
-      - ${CADDY_INTERFACE:-0.0.0.0}:80:80
-      - ${CADDY_INTERFACE:-0.0.0.0}:443:443
+      - "3000:3000"
     volumes:
-      - ./caddy_data:/data
-      - ./caddy_config:/config
+      - logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
     networks:
-      - dms_network
+      - dms_network    
+
+  # caddy:
+  #   container_name: dms_caddy
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/caddy/Dockerfile      
+  #   restart: unless-stopped  
+  #   env_file:
+  #     - .env.example
+  #   expose:
+  #     - 80/tcp
+  #     - 443/tcp
+  #     - 443/udp
+  #     - 2019/tcp
+  #   ports:
+  #     - ${CADDY_INTERFACE:-0.0.0.0}:80:80
+  #     - ${CADDY_INTERFACE:-0.0.0.0}:443:443
+  #   volumes:
+  #     - ./caddy_data:/data
+  #     - ./caddy_config:/config
+  #     - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile
+  #   networks:
+  #     - dms_network
 
 networks:
   dms_network:
