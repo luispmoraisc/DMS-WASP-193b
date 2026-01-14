@@ -19,7 +19,7 @@ CREATE TABLE "profiles" (
     "storage_used" BIGINT NOT NULL DEFAULT 0,
     "storage_limit" BIGINT NOT NULL DEFAULT 5368709120,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "profiles_pkey" PRIMARY KEY ("id")
 );
@@ -31,7 +31,7 @@ CREATE TABLE "folders" (
     "user_id" UUID NOT NULL,
     "parent_id" UUID,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "folders_pkey" PRIMARY KEY ("id")
 );
@@ -50,7 +50,7 @@ CREATE TABLE "files" (
     "status" "FileStatus" NOT NULL DEFAULT 'uploaded',
     "processing_result" JSONB,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "files_pkey" PRIMARY KEY ("id")
 );
@@ -66,7 +66,7 @@ CREATE TABLE "processing_jobs" (
     "result" JSONB,
     "error_message" TEXT,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ NOT NULL,
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "processing_jobs_pkey" PRIMARY KEY ("id")
 );

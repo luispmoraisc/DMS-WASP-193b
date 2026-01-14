@@ -54,7 +54,7 @@ model Profile {
   storageUsed  BigInt   @default(0) @map("storage_used")
   storageLimit BigInt   @default(5368709120) @map("storage_limit")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   folders       Folder[]
   files         File[]
@@ -70,7 +70,7 @@ model Folder {
   userId    String   @map("user_id") @db.Uuid
   parentId  String?  @map("parent_id") @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   user     Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   parent   Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
@@ -95,7 +95,7 @@ model File {
   status           FileStatus @default(UPLOADED)
   processingResult Json?      @map("processing_result")
   createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt        DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+  updatedAt        DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   user          Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
   folder        Folder?         @relation(fields: [folderId], references: [id], onDelete: SetNull)
@@ -117,7 +117,7 @@ model ProcessingJob {
   result       Json?
   errorMessage String?   @map("error_message")
   createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   file File    @relation(fields: [fileId], references: [id], onDelete: Cascade)
   user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
