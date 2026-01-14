@@ -1,5 +1,44 @@
 # DMS Wasp-193b
 
+## Product and Architecture Decisions
+
+### Architecture
+
+- Caddy as load balancer and reverse proxy (EC2 or VPS)
+- Self-hosted N8N
+- PostgreSQL
+- Redis
+- API service container
+- WebSocket gateway
+- BullMQ workers/queues
+
+### Backend
+
+For the MVP, Supabase + N8N are used to accelerate delivery.
+
+High-level flow:
+
+Client -> API -> Supabase Storage -> N8N workflow -> Mistral -> WebSocket -> Client
+                 Supabase Tables                                Redis
+                 Redis
+
+### Frontend
+
+- Marketing site with Next.js for indexing and SEO.
+- React SPA delivered as static assets via CDN for the authenticated area, keeping costs and infra complexity low.
+
+## Roadmap
+
+- Rate limiting
+- WebSockets
+- Workers and queues
+- Security improvements
+- Observability improvements
+
+### Evolution
+
+Day 0: move any direct Supabase client access into the backend.
+
 ## Overview
 
 This repository is a Turbo-powered monorepo for the DMS backend stack. It contains an API service and a set of shared packages that implement application, domain, infrastructure, and interface layers.
@@ -17,6 +56,7 @@ This repository is a Turbo-powered monorepo for the DMS backend stack. It contai
 - Docker
 - Prometheus
 - Grafana
+- Caddy
 
 ### Development
 
@@ -81,7 +121,6 @@ The Docker compose stack provides:
 - Postgres (`localhost:5432`)
 - Prometheus (`localhost:9090`)
 - Grafana (`localhost:4000`)
-- N8N (`localhost:5678`)
 
 Start it with:
 
