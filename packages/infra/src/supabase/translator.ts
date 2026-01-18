@@ -1,26 +1,21 @@
+import { AppError } from "@dms/shared/appError";
 import {
+  CatalogMap,
+  CodeLevelMap,
   logger,
   pickLogLevel,
   TransformAndLogParams,
-  CatalogMap,
-  CodeLevelMap,
 } from "@dms/shared/logger";
+import { isAuthApiError } from "@supabase/supabase-js";
 import { supabaseErrorsCounter } from "./metrics/supabase.metrics";
-import { AppError } from "@dms/shared/appError";
 
 const defaultCodeLevels: CodeLevelMap = {
   P2025: "warn", // Not Found
 };
 
-// TODO - create extraction based on Supabase docs
 const extractSupabaseCode = (error: unknown): string | undefined => {
-  if (
-    error &&
-    typeof error === "object" &&
-    "code" in error &&
-    typeof (error as any).code === "string"
-  ) {
-    return (error as any).code as string;
+  if (isAuthApiError(error)) {
+    return error.code;
   }
   return undefined;
 };

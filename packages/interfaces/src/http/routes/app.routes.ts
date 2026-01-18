@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { DependencyContainer } from "tsyringe";
 import { register } from "prom-client";
+import { DependencyContainer } from "tsyringe";
 
+import { protectedRoute } from "../middlewares/auth.middleware";
 import { profileRoutes } from "./profile.routes";
 import { userRoutes } from "./user.routes";
-import { protectRoute } from "../middlewares/auth.middleware";
 
 export const createApiRoutes = (container: DependencyContainer) => {
   const router = Router();
@@ -29,7 +29,7 @@ export const createApiRoutes = (container: DependencyContainer) => {
 
   v1Router.use(
     "/profiles",
-    (req, res, next) => protectRoute(container, req, res, next),
+    (req, res, next) => protectedRoute(container, req, res, next),
     profileRoutes(container)
   );
   v1Router.use("/auth", userRoutes(container));

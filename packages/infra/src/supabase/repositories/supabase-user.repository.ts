@@ -1,21 +1,21 @@
-import { inject, injectable } from "tsyringe";
-import { maskSensitiveData } from "@dms/shared/utils";
 import type { IUserRepository } from "@dms/domain/repositories";
-import type { Logger, TMonitoringParams } from "@dms/shared/logger";
 import type {
   TMeSchema,
   TSignInSchema,
   TSignInUpSchema,
 } from "@dms/domain/schemas";
+import type { Logger, TMonitoringParams } from "@dms/shared/logger";
+import { maskSensitiveData } from "@dms/shared/utils";
+import { inject, injectable } from "tsyringe";
 
 import { SupabaseUserCatalog } from "../catalogs/supabase-user.catalog";
-import { SupabaseUserMapper } from "../mappers/supabase-user.mapper";
-import { SupabaseErrorTranslator } from "../translator";
 import { supabaseClient } from "../lib/client";
+import { SupabaseUserMapper } from "../mappers/supabase-user.mapper";
 import {
-  supabaseSignUpsCounter,
   supabaseSignInsCounter,
+  supabaseSignUpsCounter,
 } from "../metrics/supabase.metrics";
+import { SupabaseErrorTranslator } from "../translator";
 
 @injectable()
 export class SupabaseUserRepository implements IUserRepository {
@@ -93,18 +93,11 @@ export class SupabaseUserRepository implements IUserRepository {
 
       return SupabaseUserMapper.toDomain(data.session);
     } catch (error) {
-      throw SupabaseErrorTranslator.translateAndLog({
-        error,
-        catalog: SupabaseUserCatalog,
-        ctx: {
-          ...ctx,
-          repo: "SupabaseUserRepository",
-          op: "signUp",
-          traceId: ctx?.traceId,
-          payload: maskSensitiveData(ctx?.payload),
-          codeLevels: {},
-        },
+      supabaseSignInsCounter.inc({
+        status: "error",
+        repo: "SupabaseUserRepository",
       });
+      throw error;
     }
   }
 

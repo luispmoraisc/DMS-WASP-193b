@@ -1,8 +1,8 @@
+import { MeUseCase } from "@dms/application/use-cases";
 import { NextFunction, Request, Response } from "express";
 import { DependencyContainer } from "tsyringe";
-import { MeUseCase } from "@dms/application/use-cases";
 
-export const protectRoute = async (
+export const protectedRoute = async (
   container: DependencyContainer,
   req: Request,
   res: Response,
