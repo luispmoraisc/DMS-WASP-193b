@@ -3,6 +3,7 @@ import { register } from "prom-client";
 import { DependencyContainer } from "tsyringe";
 
 import { protectedRoute } from "../middlewares/auth.middleware";
+import { fileRoutes } from "./file.routes";
 import { profileRoutes } from "./profile.routes";
 import { userRoutes } from "./user.routes";
 
@@ -33,6 +34,7 @@ export const createApiRoutes = (container: DependencyContainer) => {
     profileRoutes(container)
   );
   v1Router.use("/auth", userRoutes(container));
+  v1Router.use("/files", fileRoutes(container));
   router.use("/api/v1", v1Router);
 
   return router;

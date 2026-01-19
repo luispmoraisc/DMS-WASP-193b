@@ -1,14 +1,15 @@
-import { inject, injectable } from "tsyringe";
 import type { IProfileRepository } from "@dms/domain/repositories";
-import { logger, type TMonitoringParams } from "@dms/shared/logger";
 import type {
-  TUpdateProfileSchema,
   TUpdateProfileResponseDTO,
+  TUpdateProfileSchema,
 } from "@dms/domain/schemas";
+import { type Logger, type TMonitoringParams } from "@dms/shared/logger";
+import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class UpdateProfileUseCase {
   constructor(
+    @inject("Logger") private logger: Logger,
     @inject("ProfileRepository") private profileRepository: IProfileRepository
   ) {}
 
@@ -17,7 +18,7 @@ export class UpdateProfileUseCase {
     ctx?: TMonitoringParams
   ): Promise<TUpdateProfileResponseDTO> {
     try {
-      logger.info(
+      this.logger.info(
         { ctx },
         `change profile request received for user id: ${data.id}`
       );
