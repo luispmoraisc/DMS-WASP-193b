@@ -1,12 +1,13 @@
-import { inject, injectable } from "tsyringe";
 import type { IUserRepository } from "@dms/domain/repositories";
-import { logger, type TMonitoringParams } from "@dms/shared/logger";
 import type { TSignInUpSchema } from "@dms/domain/schemas";
+import { type Logger, type TMonitoringParams } from "@dms/shared/logger";
 import { maskSensitiveData } from "@dms/shared/utils";
+import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class SignUpUseCase {
   constructor(
+    @inject("Logger") private logger: Logger,
     @inject("UserRepository") private userRepository: IUserRepository
   ) {}
 
@@ -16,7 +17,7 @@ export class SignUpUseCase {
   ): Promise<void> {
     try {
       const maskedData = maskSensitiveData(data);
-      logger.debug(
+      this.logger.debug(
         { ctx },
         `sign up request received for email: ${maskedData.email}`
       );

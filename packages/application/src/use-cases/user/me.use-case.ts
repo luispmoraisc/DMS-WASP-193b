@@ -1,11 +1,12 @@
-import { inject, injectable } from "tsyringe";
 import type { IUserRepository } from "@dms/domain/repositories";
-import { type TMonitoringParams } from "@dms/shared/logger";
 import type { TMeSchema, TSignInResponseDTO } from "@dms/domain/schemas";
+import { type Logger, type TMonitoringParams } from "@dms/shared/logger";
+import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class MeUseCase {
   constructor(
+    @inject("Logger") private logger: Logger,
     @inject("UserRepository") private userRepository: IUserRepository
   ) {}
 

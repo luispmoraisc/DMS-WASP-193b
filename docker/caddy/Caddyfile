@@ -1,7 +1,15 @@
 {
-	email {$ADMIN_USER_EMAIL}
-	acme_ca {$CADDY_ACME_API}
-	admin 0.0.0.0:2019
+  admin 127.0.0.1:2019
+}
+
+(proxy_common) {
+  header_up X-Real-IP {remote_host}
+  header_up X-Forwarded-For {remote_host}
+  transport http {
+    dial_timeout 10s
+    read_timeout 60s
+    write_timeout 60s
+  }
 }
 
 *.{$DOMAIN} {
@@ -11,7 +19,11 @@
 	}
 
 	log {
-		output file /data/access.log
+		output file /data/access.log {
+			roll_size 50mb
+			roll_keep 10
+			roll_keep_for 720h
+		}
 		format console
 		level INFO
 	}
@@ -28,15 +40,16 @@
 	
 	@n8n host n8n.{$DOMAIN}
 	reverse_proxy @n8n n8n:{$N8N_PORT:5678} {
-		header_up Host {host}
-		header_up X-Real-IP {remote}
-		header_up X-Forwarded-For {remote}
-		header_up X-Forwarded-Proto {scheme}
-		header_up X-Forwarded-Host {host}
-		header_up X-Forwarded-Port "443"
-		transport http {
-			dial_timeout 10s
-			read_timeout 30s
-		}
+		import proxy_common
+	}	
+	
+	@api host api.{$DOMAIN}
+	reverse_proxy @api api:{$PORT:3000} {
+		import proxy_common
+	}	
+	
+	@grafana host grafana.{$DOMAIN}
+	reverse_proxy @grafana grafana:3000 {
+		import proxy_common
 	}	
 }
